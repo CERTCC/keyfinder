@@ -6,7 +6,7 @@
       * [Verbose Output](#verbose-output)
    * [APK Parsing](#apk-parsing)
       * [Simple APK Example](#simple-apk-example)
-      * [crt.sh Checking](#crt.sh-checking)
+      * [crt.sh Checking](#crtsh-checking)
       * [Key File Usage](#key-file-usage)
 
 # Overview
@@ -54,7 +54,10 @@ optional arguments:
 
 ## Key Parsing
 
-CERT Keyfinder can be used to scan the files on your system, reporting only private and/or password-protected key files by default.  For example, running Keyfinder on the `~` directory on a CERT Tapioca system:
+CERT Keyfinder can be used to scan the files on your system, reporting only private and/or password-protected key files by default.  
+
+### Simple Example
+For example, running Keyfinder on the `~` directory on a CERT Tapioca system:
 ```
 $ python keyfinder.py -k ~/tapioca
 keyfile: /home/tapioca/tapioca/.mitmproxy/mitmproxy-ca-cert.p12
