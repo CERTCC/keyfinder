@@ -935,12 +935,18 @@ def decodex509(keydata, encoding='pem'):
                                                                                                    'backslashreplace')
             except subprocess.CalledProcessError:
                 pass
+            except:
+                # Python 2.x isn't so good at Unicode
+                pass
         else:
             try:
                 decoded = subprocess.check_output(
                     ['openssl', 'x509', '-in', tmpkey, '-inform', 'der', '-text', '-fingerprint', '-sha256']).decode(
                     'utf-8', 'backslashreplace')
             except subprocess.CalledProcessError:
+                pass
+            except:
+                # Python 2.x isn't so good at Unicode
                 pass
         os.unlink(tmpkey)
     return decoded
