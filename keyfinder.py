@@ -39,6 +39,7 @@ from pprint import pformat
 import tempfile
 import logging
 import binascii
+import gc
 
 try:
     from urllib2 import urlopen
@@ -1308,30 +1309,22 @@ def get_apk_signer(apkpath):
 
 
 def scan_dir(keydir, keytest, check_keyused=False):
-    if False:
-        # This isn't cancelable with Ctrl-C, or available in Python before 3.5.
-        # Todo: Investigate
-        for entry in os.scandir(keydir):
-            try:
-                if entry.is_file():
-                    testfile = entry.path
-                    if keytest == 'apk':
-                        check_apk(testfile, check_keyused)
-                    elif keytest == 'key':
-                        check_keyfile(testfile)
-                elif entry.is_dir(follow_symlinks=False):
-                    scan_dir(entry.path, keytest, check_keyused)
-            except:
-                continue
-    else:
-        for root, dirs, files in os.walk(keydir, followlinks=False):
-            if files:
-                for name in files:
-                    testfile = os.path.join(root, name)
-                    if keytest == 'apk':
-                        check_apk(testfile, check_keyused)
-                    elif keytest == 'key':
-                        check_keyfile(testfile)
+    lastroot = None
+    roots_scanned = 0
+    for root, dirs, files in os.walk(keydir, followlinks=False):
+        if roots_scanned > 20:
+            gc.collect()
+            roots_scanned = 0
+        if lastroot != root:
+            lastroot = root
+            roots_scanned += 1
+        if files:
+            for name in files:
+                testfile = os.path.join(root, name)
+                if keytest == 'apk':
+                    check_apk(testfile, check_keyused)
+                elif keytest == 'key':
+                    check_keyfile(testfile)
 
 
 def check_keyfile(keypath):
