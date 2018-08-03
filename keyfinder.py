@@ -571,7 +571,10 @@ def checkcrt(keyhash, keytype='certificate'):
             except:
                 html = None
         if html:
-            body = str(html.read())
+            try:
+                body = str(html.read())
+            except:
+                body = ''
 
             if keytype == 'pubkey':
                 if 'None found' in body:
