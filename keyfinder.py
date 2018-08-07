@@ -710,7 +710,7 @@ def decodekeydata(keyfile, keydata):
             logger.debug('Found OpenVPN key: %s' % keyfile)
             keydict['type'] = 'OpenVPN'
         elif (
-                b' RSA PRIVATE KEY' in keydata or b' DSA PRIVATE KEY' in keydata) and b'ENCRYPTED in keydata' and \
+                b' RSA PRIVATE KEY' in keydata or b' DSA PRIVATE KEY' in keydata) and b'ENCRYPTED' in keydata and \
                 b'BEGIN CERTIFICATE' in keydata:
             logger.debug(
                 'Found PEM pkcs5 ENCRYPTED PRIVATE key with CERTIFICATE: %s' % keyfile)
