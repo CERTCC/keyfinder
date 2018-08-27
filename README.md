@@ -386,11 +386,11 @@ CERT Keyfinder started its life as part of the framework used to perform my [exp
 
 ### Simple APK Example
 ```
-$ python3 keyfinder.py com.shopgate.android.app21760.apk 
+$ python3 keyfinder.py com.example.android.app123.apk
 Reached a NAMESPACE_END without having the namespace stored before? Prefix ID: 24, URI ID: 25
-testapks/com.shopgate.android.app21760.apk distributes its signing key as: res/raw/keystore.jks
-testapks/com.shopgate.android.app21760.apk includes private,protected key:  res/raw/keystore.jks (Java KeyStore)
-testapks/com.shopgate.android.app21760.apk includes protected key:  res/raw/shopgate_bks_neu.bks (BouncyCastle Keystore V1)
+testapks/com.example.android.app123.apk distributes its signing key as: res/raw/keystore.jks
+testapks/com.example.android.app123.apk includes private,protected key:  res/raw/keystore.jks (Java KeyStore)
+testapks/com.example.android.app123.apk includes protected key:  res/raw/example_bks_neu.bks (BouncyCastle Keystore V1)
 test@test-virtual-machine:/mnt/v1/keyfinder$
 ```
 Here we can see that the application in question includes a Java KeyStore file that is protected, and also that it includes a private key in it. Even thouth the Java KeyStore is protected with a password, the KeyStore file does *not* hide what the contents are. Keyfinder leverages this weakness to [change the KeyStore password](https://gist.github.com/zach-klippenstein/4631307) and then parse the contents using the native Java keytool utility. Also of interest in this case is the fact that the private key `res/raw/keystore.jks` contains the private key used to sign the Android application itself. Google indicates that [managing your key and keeping it secure are very important, both for you and for your users](https://developer.android.com/studio/publish/app-signing#manage-key), but in this case the application author has distributed it to the public!
@@ -402,13 +402,13 @@ CERT Keyfinder will query crt.sh using two sources of information:
 
 When CERT Keyfinder reports that a key is located in crt.sh, this is likely a cause for concern. The reason for this concern is because a private key associated with a certificate listed in a certificate transparency database is likely a key that should not be accessible to the public. For example, any Android APK from the Google Play is obviously publicly available. This is not the place for a private key for an HTTPS website key
 ```
-$ python3 keyfinder.py apks/ireland.numt.aplykey.apk
-apks/ireland.numt.aplykey.apk includes private key:  assets/sample-keys/ca.key (pkcs5)
-apks/ireland.numt.aplykey.apk includes private key:  assets/sample-keys/client.key (pkcs5)
-Enter pass phrase for keys/ireland.numt.aplykey/assets/sample-keys/pass.key:apks/ireland.numt.aplykey.apk includes private,protected key:  assets/sample-keys/pass.key (pkcs5)
-apks/ireland.numt.aplykey.apk includes protected key:  assets/sample-keys/pkcs12.p12 (pkcs12)
-apks/ireland.numt.aplykey.apk includes private key:  assets/sample-keys/server.key (pkcs5)
-apks/ireland.numt.aplykey.apk key assets/sample-keys/server.key is listed in crt.sh: https://crt.sh/?spkisha256=493f34228ad3179e2dad25a392acae4d2dcaebcf633240a9df9d7f4413c4e681
+$ python3 keyfinder.py apks/ireland.example.apk
+apks/ireland.example.apk includes private key:  assets/sample-keys/ca.key (pkcs5)
+apks/ireland.example.apk includes private key:  assets/sample-keys/client.key (pkcs5)
+Enter pass phrase for keys/ireland.numt.aplykey/assets/sample-keys/pass.key:apks/ireland.example.apk includes private,protected key:  assets/sample-keys/pass.key (pkcs5)
+apks/ireland.example.apk includes protected key:  assets/sample-keys/pkcs12.p12 (pkcs12)
+apks/ireland.example.apk includes private key:  assets/sample-keys/server.key (pkcs5)
+apks/ireland.example.apk key assets/sample-keys/server.key is listed in crt.sh: https://crt.sh/?spkisha256=493f34228ad3179e2dad25a392acae4d2dcaebcf633240a9df9d7f4413c4e681
 $
 ```
 Here we can see that the file `assets/sample-keys/server.key` is listed in crt.sh as: [https://crt.sh/?spkisha256=493f34228ad3179e2dad25a392acae4d2dcaebcf633240a9df9d7f4413c4e681](https://crt.sh/?spkisha256=493f34228ad3179e2dad25a392acae4d2dcaebcf633240a9df9d7f4413c4e681). Because this query is for a public key hash, rather than a certificate itself, we need to click through to any of the seen certificates to get details about what the private key may be used for. By clicking through to [https://crt.sh/?id=35604116](https://crt.sh/?id=35604116), we can see that the certificate was issued by Comodo CA Limited for the domain names `oxsv.meta-level.de` and `www.oxsv.meta-level.de`. Because this certificate expired in 2013, this issue is perhaps not terribly important. However, one might wonder how the private key `assets/sample-keys/server.key` ended up in a publicly-released Android application, and also was used by a publicly-available server. The impact of such a key leak may depend on how the server in question is being used.
@@ -416,11 +416,11 @@ Here we can see that the file `assets/sample-keys/server.key` is listed in crt.s
 ### Key File Usage
 Keyfinder includes another capability that can help to determine the functionality of a key used by an Android application. By using the `-u` option, Keyfinder will extract the APK contents using [apktool](https://ibotpeaches.github.io/Apktool/) and then check for APK contents that reference that key file. For example:
 ```
-$ python3 keyfinder.py apks/by_sha256/06/14/49/06144936809844bcb120d360ecc148679e33fd013c2bdac8bd9d7b63d71a57a4/tntapp.trinitymember.apk -u
-I: Using Apktool 2.3.1-dirty on tntapp.trinitymember.apk
+$ python3 keyfinder.py apks/by_sha256/06/14/49/06144936809844bcb120d360ecc148679e33fd013c2bdac8bd9d7b63d71a57a4/example.memberapp.apk -u
+I: Using Apktool 2.3.1-dirty on example.memberapp.apk
 I: Loading resource table...
 I: Decoding AndroidManifest.xml with resources...
-I: Loading resource table from file: /tmp/tntapp.trinitymember/1.apk
+I: Loading resource table from file: /tmp/example.memberapp/1.apk
 I: Regular manifest package...
 I: Decoding file-resources...
 I: Decoding values */* XMLs...
@@ -430,7 +430,7 @@ I: Copying unknown files...
 I: Copying original files...
 res/raw/sm_private is referenced by extracted/tntapp.trinitymember/smali/tntapp/trinitymember/R$raw.smali
 res/raw/sm_private is referenced by extracted/tntapp.trinitymember/res/values/public.xml
-apks/by_sha256/06/14/49/06144936809844bcb120d360ecc148679e33fd013c2bdac8bd9d7b63d71a57a4/tntapp.trinitymember.apk includes private key:  res/raw/sm_private (pkcs5)
+apks/by_sha256/06/14/49/06144936809844bcb120d360ecc148679e33fd013c2bdac8bd9d7b63d71a57a4/example.memberapp.apk includes private key:  res/raw/sm_private (pkcs5)
 
 ```
 Here we can see that the Anrdoid code `R$raw.smali` makes reference to the `sm_private` key file. If we look at the `R$raw.smali` file, we can see one reference to sm_private:
