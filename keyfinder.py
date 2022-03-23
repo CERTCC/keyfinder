@@ -1094,14 +1094,16 @@ def analyze_keyfile(keyfile, mimetype=None, passwd=''):
                 if 'x509text' not in keydict:
                     keydict['type'] = 'pkcs12'
                     keydict['protected'] = True
-                    keydict['protected'] = True
+                else:
+                    keydict['type'] = 'pkcs12'
+                    keydict['protected'] = False
 
             logger.debug('p12 keydict: %s' % logger.debug(pformat(keydict)))
         else:
             # No valid ASN, so probably not really a PKCS#12 file
             # keydict['type'] = 'INVALID'
             pass
-        
+
     else:
         # Non-PKCS12 or JKS file (pkcs8, pkcs5)
         logger.debug('Selecting %s' % keyfile)
@@ -1177,7 +1179,7 @@ def print_key(keydict):
                     # else:
                     #     # Only print details in verbose mode or higher
                     #     logger.info('%s: %s%s' % (keyprop, os.linesep, keydict[keyprop]))
-            
+
             if important:
                 logger.warning('%s=====================%s' % (os.linesep, os.linesep))
             else:
