@@ -1244,7 +1244,7 @@ def extract_apk(apkpath):
         if not os.path.exists(tmppath):
             os.mkdir(tmppath)
         logger.debug('Extracting %s' % getappname(apkpath))
-        os.mkdir(extract_dir)
+        os.makedirs(extract_dir)
         try:
             subprocess.call(['apktool', 'd', apkpath, '-p', tmppath, '-o', extract_dir, '-f'])
         except FileNotFoundError:
